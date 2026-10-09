@@ -26,10 +26,16 @@ with st.sidebar:
     api_key = st.text_input(
         "Gemini API key",
         type="password",
-        help="Leave empty if your app.env file already has the key.",
+        help="Leave empty if the key is already set in Secrets or app.env.",
     )
     if api_key:
         os.environ["GEMINI_API_KEY"] = api_key
+    else:
+        try:
+            if "GEMINI_API_KEY" in st.secrets:
+                os.environ["GEMINI_API_KEY"] = st.secrets["GEMINI_API_KEY"]
+        except Exception:
+            pass  # no secrets file locally, which is fine
     if os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY"):
         st.success("API key found")
     else:
